@@ -7,7 +7,7 @@ on:
 
 env:
   # EDIT this env variable
-  IMAGE_ID: uhub.service.ucloud.cn/ga6840/calabash
+  IMAGE_ID: uhub.service.ucloud.cn/ga6840/gateway
 
 jobs:
 
