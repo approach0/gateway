@@ -4,7 +4,7 @@ local function docker_cli_get(url)
 	httpc:set_timeout(500) -- 500 ms timeout
 
 	local res, err = httpc:request_uri(
-		"http://127.0.0.1/dockersock/services"
+		"http://127.0.0.1/services"
 	)
 
 	if not err then
