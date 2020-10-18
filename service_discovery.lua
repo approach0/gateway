@@ -1,45 +1,17 @@
 local function docker_cli_get(url)
-	local data, errstr, line, last_line, _ -- default = nil
+	local http = require("resty.http")
+	local httpc = http.new()
+	httpc:set_timeout(500) -- 500 ms timeout
 
-	-- invoke ngx-socket (only available when ngx.timer.at(0))
-	local sock = ngx.socket.stream()
-	sock:settimeout(1000) -- 100 ms timeout
-
-	-- connect to unix domain socket
-	local ok, err = sock:connect("unix:/var/run/docker.sock")
-	if not ok then
-		errstr = '~~ sock:connect err: ' .. err .. ' ~~'
-		goto close
-	end
-
-	-- compose and send HTTP GET request
-	_, err = sock:send(
-		'GET '.. url ..' HTTP/1.1\r\n' ..
-		'Host: localhost\r\n' ..
-		'Accept: */*\r\n' ..
-		'\r\n'
+	local res, err = httpc:request_uri(
+		"http://127.0.0.1/dockersock/services"
 	)
-	if err then
-		errstr = '~~ sock:send err: ' .. err .. ' ~~'
-		goto close
+
+	if not err then
+		data = res.body
 	end
 
-	-- receive response data line by line
-	-- and extract body data
-	while true do
-		line, err = sock:receive("*l")
-		if err then
-			errstr = '~~ sock:receive err: ' .. err .. ' ~~'
-			goto close
-		elseif last_line == '' then
-			data = line
-			goto close
-		end
-		last_line = line
-	end
-
-	::close::
-	sock:close()
+	http:close()
 	return data, errstr
 end
 
@@ -47,7 +19,7 @@ local function discover_services()
 	local cjson = require("cjson")
 	local json, err = docker_cli_get('/services')
 	if err then
-		print(err)
+		errstr = '~~ sock:connect err: ' .. err .. ' ~~'
 		return
 	end
 
