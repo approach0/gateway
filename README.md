@@ -7,7 +7,7 @@
 * Statistics and Metrics (InfluxDB, Prometheus)
 * JWT verification
 
-## Usage
+## Quick start
 Build the image
 ```
 # docker build -t gateway .
@@ -20,6 +20,7 @@ Run gateway locally
 
 Test in your browser with URL: `http://localhost:8080/nonexist`
 
+## Swarm environment
 To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` and setup like the following:
 ```
 # docker swarm init
@@ -30,3 +31,6 @@ To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` 
 # docker service create --label=gateway.port=8080 --label=gateway.route=foo --network testnet ga6840/hello-httpd node hello.js This is foo service
 # docker service create --label=gateway.port=80 --label=gateway.route=users --mount=type=bind,src=`pwd`/tmp,dst=/postgres/data --network testnet ga6840/postgres13
 ```
+
+Now try visiting `http://localhost:8080/users?foo=bar` for micro-service `users`.
+Notice this URL will be automatically redirected to `http://localhost:8080/users/?foo=bar` by gateway to ensure requests to relative paths in service UI are working as expected.
