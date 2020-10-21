@@ -1,17 +1,12 @@
 local route = ngx.var.service_route
-
--- Handle URI rewriting
 local modified_uri = ngx.var.modified_uri
 local query_params = ngx.var.is_args .. (ngx.var.args or '')
-if modified_uri == '' or modified_uri == nil then
-	-- Nginx dislikes empty variable, let's put a trailing slash here
-	ngx.var.modified_uri = '/'
-else
-	-- force to an URL with trailing slash here for correct relative path
-	local last_char = string.sub(modified_uri, -1)
-	if last_char ~= '/' then
-		ngx.redirect('/' .. route .. modified_uri .. '/' .. query_params)
-	end
+
+-- Handle URI rewriting
+if modified_uri == '' then
+	-- force service root URL to have trailing slash so that
+	-- we ensure correct relative path for micro-services
+	ngx.redirect('/' .. route .. '/' .. query_params)
 end
 
 -- Handle proxy host rewriting
@@ -37,4 +32,4 @@ else
 end
 
 -- Print final rewriting rule (if no ngx.exit/redirect is called)
-print(ngx.var.request_uri, ' => ', modified_uri, query_params)
+print(ngx.var.request_uri, ' ==> ', modified_uri, query_params)
