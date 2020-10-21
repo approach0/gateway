@@ -13,7 +13,9 @@ Build the image
 docker build -t gateway .
 ```
 
-Test gateway locally
+Run gateway locally
 ```
 docker run -it --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock gateway
 ```
+
+Test in your browser with URL: `http://localhost:8080/nonexist`
