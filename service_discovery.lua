@@ -32,10 +32,14 @@ local function discover_services()
 		for key in pairs(Labels) do
 			local val = Labels[key]
 			if key == 'gateway.jwt_port' then
-				local jwt_token, err = http_GET(Name .. ':' .. val)
+				local jwt_token, err = http_GET(
+					'http://' .. Name .. ':' .. val
+				)
 				if not err then
 					print('JWT token: ', jwt_token)
 					ngx.shared.JWT:set('token', jwt_token)
+				else
+					print('JWT update error: ', err)
 				end
 			elseif key == 'gateway.route' then
 				gateway_route = val
