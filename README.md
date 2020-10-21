@@ -20,7 +20,7 @@ Run gateway locally
 
 Test in your browser with URL: `http://localhost:8080/nonexist`
 
-To test in swarm environment, use mock-up micro services `ga6840/hello-httpd` and setup like the following
+To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` and setup like the following:
 ```
 # docker swarm init
 # docker network create --driver=overlay testnet

@@ -1,4 +1,20 @@
 local route = ngx.var.service_route
+
+-- Handle URI rewriting
+local modified_uri = ngx.var.modified_uri
+local query_params = ngx.var.is_args .. (ngx.var.args or '')
+if modified_uri == '' or modified_uri == nil then
+	-- Nginx dislikes empty variable, let's put a trailing slash here
+	ngx.var.modified_uri = '/'
+else
+	-- force to an URL with trailing slash here for correct relative path
+	local last_char = string.sub(modified_uri, -1)
+	if last_char ~= '/' then
+		ngx.redirect('/' .. route .. modified_uri .. '/' .. query_params)
+	end
+end
+
+-- Handle proxy host rewriting
 local name = ngx.shared.service_name:get(route)
 local port = ngx.shared.service_port:get(route)
 if name and port then
@@ -20,6 +36,5 @@ else
 	end
 end
 
-if ngx.var.modified_uri == '' then
-	ngx.var.modified_uri = '/'
-end
+-- Print final rewriting rule (if no ngx.exit/redirect is called)
+print(ngx.var.request_uri, ' => ', modified_uri, query_params)
