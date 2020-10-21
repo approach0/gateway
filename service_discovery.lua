@@ -36,7 +36,6 @@ local function discover_services()
 					'http://' .. Name .. ':' .. val
 				)
 				if not err then
-					print('JWT token: ', jwt_token)
 					ngx.shared.JWT:set('token', jwt_token)
 				else
 					print('JWT update error: ', err)
