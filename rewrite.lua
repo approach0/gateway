@@ -7,8 +7,12 @@ if name and port then
 else
 	print('[gateway] service for "', route, '" not found.')
 	if route == '404' then
+		-- No micro-service for 404 route, use built-in page.
 		ngx.header.content_type = 'text/html; charset=utf-8'
-		ngx.print('<h1>404</h1> <p>Page not found.</p>')
+		ngx.print([[
+		<h2>404 Page not found</h2>
+		<p>Please check out later if you keep seeing this.</p>
+		]])
 		ngx.exit(ngx.HTTP_OK)
 	else
 		-- Redirect client browser to route 404
