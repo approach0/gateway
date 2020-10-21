@@ -7,6 +7,7 @@ if name and port then
 else
 	print('[gateway] service for "', route, '" not found.')
 	if route == '404' then
+		ngx.header.content_type = 'text/html; charset=utf-8'
 		ngx.print('<h1>404</h1> <p>Page not found.</p>')
 		ngx.exit(ngx.HTTP_OK)
 	else
