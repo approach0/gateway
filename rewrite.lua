@@ -7,13 +7,11 @@ if name and port then
 	ngx.var.service_addr = name .. ':' .. port
 else
 	print('[gateway] service for "', route, '" not found.')
-	name = ngx.shared.service_name:get('404')
-	port = ngx.shared.service_port:get('404')
-	if name and port then
-		-- Output service address for proxy_pass
-		ngx.var.service_addr = name .. ':' .. port
-	else
+	if route == '404' then
 		ngx.print('<h1>404</h1> <p>Page not found.</p>')
 		ngx.exit(ngx.HTTP_OK)
+	else
+		-- Redirect client browser to route 404
+		ngx.redirect("/404")
 	end
 end
