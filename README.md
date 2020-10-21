@@ -3,10 +3,10 @@ This is yet another API gateway service, built upon OpenResty in minimalist fash
 
 ## Features
 * Docker Swarm service discovery
+* JWT login
 * Rate limit for unique IP
-* TLS / Let's encrypt and auto-renewal
 * Statistics and Metrics (InfluxDB, Prometheus)
-* JWT verification
+* TLS / Let's encrypt and auto-renewal
 
 ## Quick start
 Build the image
