@@ -1,12 +1,9 @@
-local function docker_cli_get(url)
+local function http_GET(url)
 	local http = require("resty.http")
 	local httpc = http.new()
 	httpc:set_timeout(500) -- 500 ms timeout
 
-	local res, err = httpc:request_uri(
-		"http://127.0.0.1/services"
-	)
-
+	local res, err = httpc:request_uri(url)
 	if not err then
 		data = res.body
 	end
@@ -16,27 +13,40 @@ local function docker_cli_get(url)
 end
 
 local function discover_services()
-	local cjson = require("cjson")
-	local json, err = docker_cli_get('/services')
+	local json, err = http_GET('http://127.0.0.1/services')
 	if err then
 		errstr = '~~ sock:connect err: ' .. err .. ' ~~'
 		return
 	end
 
+	local cjson = require("cjson")
 	local services = cjson.decode(json)
-	local service_port = ngx.shared.service_port
 
-	for _, serv in ipairs(services) do
-		local Spec = serv['Spec']
+	for _, service in ipairs(services) do
+		local Spec = service['Spec']
 		local Name = Spec['Name']
 		local Labels = Spec['Labels']
-		local gateway_route, gateway_port
+
+		local gateway_route, service_port
 		for key in pairs(Labels) do
 			local val = Labels[key]
-			if key == 'gateway.port' then
-				print('/', Name, ' -> ', Name, ':', val)
-				service_port:set(Name, val)
+			if key == 'gateway.jwt_port' then
+				local jwt_token, err = http_GET(Name .. ':' .. val)
+				if not err then
+					print('JWT token: ', jwt_token)
+					ngx.shared.JWT:set('token', jwt_token)
+				end
+			elseif key == 'gateway.route' then
+				gateway_route = val
+			elseif key == 'gateway.port' then
+				service_port = val
 			end
+		end
+
+		if gateway_route and service_port then
+			ngx.shared.service_name:set(gateway_route, Name)
+			ngx.shared.service_port:set(gateway_route, service_port)
+			print('/', gateway_route, ' -> ', Name, ':', service_port)
 		end
 	end
 
