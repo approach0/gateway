@@ -25,13 +25,40 @@ Test in your browser with URL: `http://localhost:8080/nonexist`
 To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` and setup like the following:
 ```
 # docker swarm init
-# docker network create --driver=overlay testnet
+# docker network create --driver=overlay --attachable testnet
 # docker service create --network testnet --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
+```
+
+Setup a few hello-world services to test the gateway
+```
 # docker service create --label=gateway.port=8080 --label=gateway.route=404 --network testnet ga6840/hello-httpd node hello.js 404
 # docker service create --label=gateway.port=8080 --label=gateway.route=_root_ --network testnet ga6840/hello-httpd node hello.js This is index service
 # docker service create --label=gateway.port=8080 --label=gateway.route=foo --network testnet ga6840/hello-httpd node hello.js This is foo service
-# docker service create --label=gateway.port=80 --label=gateway.route=users --mount=type=bind,src=`pwd`/tmp,dst=/postgres/data --network testnet ga6840/postgres13
 ```
+Now try visiting `http://localhost:8080/foo?bar=baz` to visit micro-service `foo`, and `http://localhost:8080/?bar=baz` for the landing root page.
+The former URL will be automatically redirected to an URI with trailing slash (`http://localhost:8080/foo/?bar=baz`),
+this rule is enforced by gateway to ensure requests to relative paths in service UI are working as expected.
 
-Now try visiting `http://localhost:8080/users?foo=bar` for micro-service `users`.
-Notice this URL will be automatically redirected to `http://localhost:8080/users/?foo=bar` by gateway to ensure requests to relative paths in service UI are working as expected.
+Want to have a JWT login service?
+```
+# mkdir -p ./tmp
+# docker service create --name testdb --label=gateway.port=80 --label=gateway.route=users --mount=type=bind,src=`pwd`/tmp,dst=/postgres/data --network testnet ga6840/postgres13
+# docker run --env LATTICE_DATABASE_HOST=testdb --network testnet ga6840/lattice node db.js --init
+# docker service create --env LATTICE_DATABASE_HOST=testdb --label=gateway.port=19721 --label=gateway.route=lattice --label=gateway.jwt_port=64264 --network testnet ga6840/lattice
+```
+to test it, issue:
+```
+# docker run --network host ga6840/lattice node test/test-authd.js --host http://localhost:8080/lattice
+{ pass: true,
+  msg:
+   { info:
+      { exp: 1603291752,
+        maxAge: 10,
+        loggedInAs: 'admin',
+        scope: [Array] },
+     algorithm: { algorithm: 'HS256' },
+     token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMyOTE3NTIsIm1heEFnZSI6MTAsImxvZ2dlZEluQXMiOiJhZG1pbiIsInNjb3BlIjpbIi8qIl0sImlhdCI6MTYwMzI5MTc0Mn0.MY5T_ROirpdoDDzBz17zJfe8vjtQmwC2bw392La3nnw' } }
+lattice-jwt-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMyOTE3NTIsIm1heEFnZSI6MTAsImxvZ2dlZEluQXMiOiJhZG1pbiIsInNjb3BlIjpbIi8qIl0sImlhdCI6MTYwMzI5MTc0Mn0.MY5T_ROirpdoDDzBz17zJfe8vjtQmwC2bw392La3nnw; Max-Age=10; Path=/; Expires=Wed, 21 Oct 2020 14:49:12 GMT
+{ pass: true }
+```
