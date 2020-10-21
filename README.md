@@ -1,4 +1,5 @@
 # gateway
+This is yet another API gateway service, built upon OpenResty in minimalist fashion.
 
 ## Features
 * Docker Swarm service discovery
