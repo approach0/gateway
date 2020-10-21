@@ -1,5 +1,4 @@
 local route = ngx.var.service_route
-
 local name = ngx.shared.service_name:get(route)
 local port = ngx.shared.service_port:get(route)
 if name and port then
@@ -14,4 +13,8 @@ else
 		-- Redirect client browser to route 404
 		ngx.redirect("/404")
 	end
+end
+
+if ngx.var.modified_uri == '' then
+	ngx.var.modified_uri = '/'
 end
