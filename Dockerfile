@@ -8,6 +8,7 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends openresty openresty-opm
 #RUN apt-get install -y --no-install-recommends nginx libnginx-mod-http-lua # The nginx-lua way
 RUN opm install ledgetech/lua-resty-http
+RUN opm install SkyLothar/lua-resty-jwt
 ENV PATH="${PATH}:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin"
 WORKDIR /root
 RUN mkdir logs/ conf/

@@ -45,6 +45,8 @@ Want to have a JWT login service?
 # docker service create --name testdb --label=gateway.port=80 --label=gateway.route=users --mount=type=bind,src=`pwd`/tmp,dst=/postgres/data --network testnet ga6840/postgres13
 # docker run --env LATTICE_DATABASE_HOST=testdb --network testnet ga6840/lattice node db.js --init
 # docker service create --env LATTICE_DATABASE_HOST=testdb --label=gateway.port=19721 --label=gateway.route=lattice --label=gateway.jwt_port=64264 --network testnet ga6840/lattice
+# docker service create --label=gateway.port=8080 --label=gateway.route=bar --label=gateway.protect=/ --network testnet ga6840/hello-httpd node hello.js This is bar service
+# docker service create --label=gateway.port=8080 --label=gateway.route=baz --label=gateway.protect=/pocket,/bag --network testnet ga6840/hello-httpd node hello.js This is baz service
 ```
 to test it, issue:
 ```
