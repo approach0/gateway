@@ -5,7 +5,7 @@ This is yet another API gateway service, built upon OpenResty in minimalist fash
 * Docker Swarm service discovery
 * JWT login
 * Rate limit for unique IP
-* Statistics and Metrics (InfluxDB, Prometheus)
+* Statistics and Metrics (based on Prometheus)
 * TLS / Let's encrypt and auto-renewal
 
 ## Quick start
@@ -22,6 +22,8 @@ Run gateway locally
 Test in your browser with URL: `http://localhost:8080/nonexist`
 
 ## Swarm environment
+
+### Initialization
 To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` and setup like the following:
 ```
 # docker swarm init
@@ -29,6 +31,7 @@ To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` 
 # docker service create --name gateway --network testnet --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
 ```
 
+### Hello-world service discovery
 Setup a few hello-world services to test the gateway
 ```
 # docker service create --label=gateway.port=8080 --label=gateway.route=404 --network testnet ga6840/hello-httpd node hello.js 404
@@ -39,6 +42,7 @@ Now try visiting `http://localhost:8080/foo?bar=baz` to visit micro-service `foo
 The former URL will be automatically redirected to an URI with trailing slash (`http://localhost:8080/foo/?bar=baz`),
 this rule is enforced by gateway to ensure requests to relative paths in service UI are working as expected.
 
+### JWT login
 Want to have a JWT login service?
 ```
 # mkdir -p ./tmp
@@ -65,6 +69,7 @@ lattice-jwt-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMyOTE3NTIsI
 { pass: true }
 ```
 
+### Prometheus metrics
 Now, let us hookup a Prometheus monitor for metrics
 ```
 # docker run -it -p 9090 --mount=type=bind,src=`pwd`/prometheus.yml,dst=/etc/prometheus/prometheus.yml --network testnet prom/prometheus
