@@ -73,5 +73,11 @@ local function discover_services()
 	print('=== SERVICE LIST REFRESHED ===')
 end
 
+-- For timer jobs
 ngx.timer.at(0, discover_services)
 ngx.timer.every(refresh_interval, discover_services)
+
+-- For Prometheus metrics
+prometheus = require("prometheus").init("metrics")
+metric_requests = prometheus:counter("total_requests", "Total requests")
+metric_latency = prometheus:histogram("request_latency", "request latency")
