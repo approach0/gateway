@@ -54,8 +54,8 @@ for _, test_path in pairs({route .. '/', route .. '/' .. sub_route}) do
 
 		-- Redirect client to login
 		local qry = ngx.encode_args({["next"] = full_req_uri})
-		ngx.redirect("/lattice/login?" .. qry) -- for DEBUG
-		-- ngx.redirect("/login/?" .. qry) -- for PRODUCTION
+		-- ngx.redirect("/lattice/login?" .. qry) -- for DEBUG
+		ngx.redirect("/login/?" .. qry) -- for PRODUCTION
 	end
 end
 
