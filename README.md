@@ -26,7 +26,7 @@ To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` 
 ```
 # docker swarm init
 # docker network create --driver=overlay --attachable testnet
-# docker service create --network testnet --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
+# docker service create --name gateway --network testnet --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
 ```
 
 Setup a few hello-world services to test the gateway
@@ -64,3 +64,20 @@ to test it, issue:
 lattice-jwt-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMyOTE3NTIsIm1heEFnZSI6MTAsImxvZ2dlZEluQXMiOiJhZG1pbiIsInNjb3BlIjpbIi8qIl0sImlhdCI6MTYwMzI5MTc0Mn0.MY5T_ROirpdoDDzBz17zJfe8vjtQmwC2bw392La3nnw; Max-Age=10; Path=/; Expires=Wed, 21 Oct 2020 14:49:12 GMT
 { pass: true }
 ```
+
+Now, let us hookup a Prometheus monitor for metrics
+```
+# docker run -it -p 9090 --mount=type=bind,src=`pwd`/prometheus.yml,dst=/etc/prometheus/prometheus.yml --network testnet prom/prometheus
+```
+to view Prometheus *expression browser*.
+
+A quick-start prometheus.yml looks like this
+```
+scrape_configs:
+  - job_name: 'foo'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+    - targets: ['gateway']
+```
+In query box, enter metrics such as `total_requests` as defined in `init.lua` file.
