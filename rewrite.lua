@@ -34,9 +34,10 @@ end
 
 -- Handle route JWT verification
 local jwt = require "resty.jwt"
-local sub_route = string.match(modified_uri, '[^/]+') or '/'
-local protected = ngx.shared.protect_path:get(route .. sub_route)
-print('[route] protected=',protected, ': ', route .. sub_route)
+local sub_route = string.match(modified_uri, '[^/]+') or ''
+local test_path = route .. '/' .. sub_route
+local protected = ngx.shared.protect_path:get(test_path)
+print('[route] protected=', protected or 'No', ': ', test_path)
 if protected then
 	local jwt_secret = ngx.shared.JWT:get('secret')
 	local jwt_token = ngx.var.cookie_latticejwt
