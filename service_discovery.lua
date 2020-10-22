@@ -1,3 +1,5 @@
+local refresh_interval = 10 -- timer interval (10 secs)
+
 local function http_GET(url)
 	local http = require("resty.http")
 	local httpc = http.new()
@@ -52,7 +54,8 @@ local function discover_services()
 		end
 
 		if gateway_route and service_port then
-			ngx.shared.service_name:set(gateway_route, Name)
+			local expire_secs = refresh_interval * 6
+			ngx.shared.service_name:set(gateway_route, Name, expire_secs)
 			ngx.shared.service_port:set(gateway_route, service_port)
 			print('[rule] /', gateway_route, ' -> ', Name, ':', service_port)
 			-- Any protected path?
@@ -71,4 +74,4 @@ local function discover_services()
 end
 
 ngx.timer.at(0, discover_services)
-ngx.timer.every(10, discover_services)
+ngx.timer.every(refresh_interval, discover_services)
