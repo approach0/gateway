@@ -61,7 +61,7 @@ local function discover_services()
 				for path in string.gmatch(protect_paths, "[^,]+") do
 					local protect_path = gateway_route .. path
 					ngx.shared.protect_path:set(protect_path, true)
-					print('[rule] protect: ', protect_path)
+					print('[rule] @ protect: ', protect_path)
 				end
 			end
 		end
