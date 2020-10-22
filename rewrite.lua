@@ -49,6 +49,7 @@ if protected then
 	else
 		-- Redirect client to login
 		local qry = ngx.encode_args({["next"] = full_req_uri})
+		-- ngx.redirect("/lattice/login?" .. qry) -- for DEBUG
 		ngx.redirect("/login/?" .. qry)
 	end
 end
