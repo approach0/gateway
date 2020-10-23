@@ -79,5 +79,5 @@ ngx.timer.every(refresh_interval, discover_services)
 
 -- For Prometheus metrics
 prometheus = require("prometheus").init("metrics")
-metric_requests = prometheus:counter("total_requests", "Total requests")
+metric_requests = prometheus:counter("total_requests", "Total requests", {"uri", "status"})
 metric_latency = prometheus:histogram("request_latency", "request latency")

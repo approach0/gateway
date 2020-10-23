@@ -72,7 +72,7 @@ lattice-jwt-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMyOTE3NTIsI
 ### Prometheus metrics
 Now, let us hookup a Prometheus monitor for metrics
 ```
-# docker run -it -p 9090 --mount=type=bind,src=`pwd`/prometheus.yml,dst=/etc/prometheus/prometheus.yml --network testnet prom/prometheus
+# docker run -it --name prometheus -p 9090:9090 --mount=type=bind,src=`pwd`/prometheus.yml,dst=/etc/prometheus/prometheus.yml --network testnet prom/prometheus
 ```
 to view Prometheus *expression browser*.
 
