@@ -1,0 +1,71 @@
+An example JSON result from GeoIP library.
+```
+{
+   "city":{
+      "geoname_id":1805880,
+      "names":{
+         "en":"Jiekou",
+         "zh-CN":"街口"
+      }
+   },
+   "subdivisions":[
+      {
+         "geoname_id":1809935,
+         "names":{
+            "en":"Guangdong",
+            "fr":"Province de Guangdong",
+            "zh-CN":"广东"
+         },
+         "iso_code":"GD"
+      }
+   ],
+   "country":{
+      "geoname_id":1814991,
+      "names":{
+         "en":"China",
+         "ru":"Китай",
+         "fr":"Chine",
+         "pt-BR":"China",
+         "zh-CN":"中国",
+         "es":"China",
+         "de":"China",
+         "ja":"中国"
+      },
+      "iso_code":"CN"
+   },
+   "registered_country":{
+      "geoname_id":1814991,
+      "names":{
+         "en":"China",
+         "ru":"Китай",
+         "fr":"Chine",
+         "pt-BR":"China",
+         "zh-CN":"中国",
+         "es":"China",
+         "de":"China",
+         "ja":"中国"
+      },
+      "iso_code":"CN"
+   },
+   "location":{
+      "time_zone":"Asia\/Shanghai",
+      "longitude":113.581,
+      "accuracy_radius":50,
+      "latitude":23.5499
+   },
+   "continent":{
+      "geoname_id":6255147,
+      "names":{
+         "en":"Asia",
+         "ru":"Азия",
+         "fr":"Asie",
+         "pt-BR":"Ásia",
+         "zh-CN":"亚洲",
+         "es":"Asia",
+         "de":"Asien",
+         "ja":"アジア"
+      },
+      "code":"AS"
+   }
+}
+```

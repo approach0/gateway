@@ -79,5 +79,36 @@ ngx.timer.every(refresh_interval, discover_services)
 
 -- For Prometheus metrics
 prometheus = require("prometheus").init("metrics")
-metric_requests = prometheus:counter("total_requests", "Total requests", {"uri", "status"})
-metric_latency = prometheus:histogram("request_latency", "request latency")
+
+metric_request = prometheus:counter("request", "Request", {
+	"ip",
+	"uri",
+	"status",
+	"city",
+	"ctry",
+	"longitude",
+	"latitude",
+	"response_bytes",
+	"handle_time"
+})
+
+-- For GeoIP
+geo = require('resty.maxminddb')
+if not geo.initted() then
+	geo.init("./conf/GeoLite2-City.mmdb")
+end
+
+function geo_lookup(IP_addr)
+	local res, err = geo.lookup(IP_addr)
+	if res then
+		-- Refer to GeoIP.md for an example JSON
+		return true, {
+			city = res.city.names,en,
+			country = res.country.names,en,
+			longitude = res.location.longitude,
+			latitude = res.location.latitude
+		}
+	else
+		return false, err
+	end
+end

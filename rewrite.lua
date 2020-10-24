@@ -3,6 +3,15 @@ local modified_uri = ngx.var.modified_uri
 local query_params = ngx.var.is_args .. (ngx.var.args or '')
 local full_req_uri = ngx.var.request_uri
 
+-- Handle GeoIP information
+local success, info = geo_lookup(ngx.var.remote_addr)
+if success then
+	ngx.var.geo_city = info.city
+	ngx.var.geo_ctry = info.country
+	ngx.var.geo_longitude = info.longitude
+	ngx.var.geo_latitude  = info.latitude
+end
+
 -- Handle proxy host rewriting
 local name = ngx.shared.service_name:get(route)
 local port = ngx.shared.service_port:get(route)
