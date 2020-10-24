@@ -97,6 +97,8 @@ metric_response_bytes = prometheus:counter("response_bytes", "Response Bytes", {
 
 metric_request_timecost = prometheus:counter("request_timeout", "Request Timeout", {"uri"})
 
+metric_connections = prometheus:gauge("connections", "Number of HTTP connections")
+
 -- For GeoIP
 geo = require('resty.maxminddb')
 if not geo.initted() then
