@@ -16,11 +16,10 @@ WORKDIR /root
 RUN mkdir logs/ conf/
 ## Get GeoIP database
 ENV license=vP65qsGQCxfewnTs
-RUN wget "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${license}&suffix=tar.gz" -O GeoLite2-Country.tar.gz
 RUN wget "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${license}&suffix=tar.gz" -O GeoLite2-City.tar.gz
-RUN tar -xzvf GeoLite2-Country.tar.gz && mv GeoLite2-Country_*/*.mmdb ./conf
 RUN tar -xzvf GeoLite2-City.tar.gz && mv GeoLite2-City*/*.mmdb ./conf
 RUN rm -rf GeoLite2-*
+RUN apt-get install -y --no-install-recommends libmaxminddb0 libmaxminddb-dev mmdb-bin # for libmaxminddb.so
 ## END
 COPY ./nginx.conf ./conf/
 COPY ./*.lua ./conf/
