@@ -80,17 +80,22 @@ ngx.timer.every(refresh_interval, discover_services)
 -- For Prometheus metrics
 prometheus = require("prometheus").init("metrics")
 
-metric_request = prometheus:counter("request", "Request", {
-	"ip",
+metric_request_uri = prometheus:counter("request_uri", "Request URI", {
 	"uri",
-	"status",
+	"status"
+})
+
+metric_request_geoip = prometheus:counter("request_geoip", "Request GeoIP", {
+	"ip",
 	"city",
 	"ctry",
 	"longitude",
-	"latitude",
-	"response_bytes",
-	"handle_time"
+	"latitude"
 })
+
+metric_response_bytes = prometheus:counter("response_bytes", "Response Bytes", {"uri"})
+
+metric_request_timecost = prometheus:counter("request_timeout", "Request Timeout", {"uri"})
 
 -- For GeoIP
 geo = require('resty.maxminddb')
