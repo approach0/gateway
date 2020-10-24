@@ -1,6 +1,7 @@
+cjson = require("cjson")
 local refresh_interval = 10 -- timer interval (10 secs)
 
-local function http_GET(url)
+function http_GET(url)
 	local http = require("resty.http")
 	local httpc = http.new()
 	local data = ''
@@ -22,7 +23,6 @@ local function discover_services()
 		return
 	end
 
-	local cjson = require("cjson")
 	local services = cjson.decode(json)
 
 	for _, service in ipairs(services) do
@@ -98,6 +98,10 @@ metric_response_bytes = prometheus:counter("response_bytes", "Response Bytes", {
 metric_request_timecost = prometheus:counter("request_timeout", "Request Timeout", {"uri"})
 
 metric_connections = prometheus:gauge("connections", "Number of HTTP connections", {"state"})
+
+metric_swarm_services = prometheus:gauge("swarm_services", "Swarm services", {"number"})
+
+metric_swarm_nodes = prometheus:gauge("swarm_nodes", "Swarm nodes", {"number"})
 
 -- For GeoIP
 geo = require('resty.maxminddb')
