@@ -95,7 +95,7 @@ metric_request_geoip = prometheus:counter("request_geoip", "Request GeoIP", {
 
 metric_response_bytes = prometheus:counter("response_bytes", "Response Bytes", {"uri"})
 
-metric_request_timecost = prometheus:counter("request_timeout", "Request Timeout", {"uri"})
+metric_request_timecost = prometheus:counter("request_timecost", "Request Timecost", {"uri"})
 
 metric_connections = prometheus:gauge("connections", "Number of HTTP connections", {"state"})
 
