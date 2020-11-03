@@ -5,7 +5,7 @@ function http_GET(url)
 	local http = require("resty.http")
 	local httpc = http.new()
 	local data = ''
-	httpc:set_timeout(500) -- 500 ms timeout
+	httpc:set_timeout(6000) -- 6s timeout
 
 	local res, err = httpc:request_uri(url)
 	if not err then
