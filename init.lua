@@ -12,7 +12,7 @@ function http_GET(url)
 		data = res.body
 	end
 
-	http:close()
+	httpc:close()
 	return data, err
 end
 
