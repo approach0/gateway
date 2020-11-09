@@ -13,23 +13,34 @@ if success then
 end
 
 -- Handle proxy host rewriting
-local name = ngx.shared.service_name:get(route)
-local port = ngx.shared.service_port:get(route)
-if name and port then
-	-- Output service address for proxy_pass
-	ngx.var.service_addr = name .. ':' .. port
+local function get_service_addr(route, route_meta)
+	local services = route_meta['services']
+	local service_port = route_meta['port']
 
-	if route ~= '_root_' and modified_uri == '' then
-		-- force service root URL to have trailing slash so that
-		-- we ensure correct relative path for micro-services
-		ngx.redirect('/' .. route .. '/' .. query_params)
+	local last_rrb = ngx.shared.route_rrb:get(route)
+	if not last_rrb then
+		last_rrb = 0
 	end
+
+	local curr_rrb = (last_rrb + 1) % #services
+	-- print('[route] round robin: ', cjson.encode(services), '@'..curr_rrb)
+	ngx.shared.route_rrb:set(route, curr_rrb)
+	return services[curr_rrb + 1] .. ':' .. service_port
+end
+
+local route_meta_str = ngx.shared.route_map:get(route)
+if route_meta_str then
+	local route_meta = cjson.decode(route_meta_str)
+	-- Output service address for proxy_pass
+	ngx.var.service_addr = get_service_addr(route, route_meta)
 else
-	print('[route] service for "', route, '" not found.')
-	local root_name = ngx.shared.service_name:get('_root_')
-	local root_port = ngx.shared.service_port:get('_root_')
-	if not root_name or not root_port then
+	print('[route] service for "', route, '" not found, '..
+		'fall through to the root.')
+
+	local root_meta_str = ngx.shared.route_map:get('_root_')
+	if not root_meta_str then
 		-- No micro-service for 404 route, use built-in page.
+		ngx.status = ngx.HTTP_NOT_FOUND
 		ngx.header.content_type = 'text/html; charset=utf-8'
 		ngx.print([[
 		<h2>404 Page not found</h2>
@@ -37,8 +48,9 @@ else
 		]])
 		ngx.exit(ngx.HTTP_OK)
 	else
-		-- Fall through and pass to _root_ service
-		ngx.var.service_addr = root_name .. ':' .. root_port
+		-- Pass to _root_ service
+		local root_meta = cjson.decode(root_meta_str)
+		ngx.var.service_addr = get_service_addr('_root_', root_meta)
 		ngx.var.modified_uri = full_req_uri
 	end
 end
@@ -47,9 +59,9 @@ end
 local jwt = require "resty.jwt"
 local sub_route = string.match(modified_uri, '[^/]+') or ''
 for _, test_path in pairs({route .. '/', route .. '/' .. sub_route}) do
-	local protected = ngx.shared.protect_path:get(test_path)
-	print('[route] protected=', protected or 'No', ': ', test_path)
+	local protected = ngx.shared.protected:get(test_path)
 	if protected then
+		print('[route] ', test_path, ' is under protection.')
 		local jwt_secret = ngx.shared.JWT:get('secret')
 		local jwt_token = ngx.var.cookie_latticejwt
 		if jwt_secret and jwt_token then

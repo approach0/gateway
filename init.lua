@@ -1,5 +1,6 @@
 cjson = require("cjson")
-local refresh_interval = 10 -- timer interval (10 secs)
+local refresh_interval = 10 -- timer interval (in seconds)
+local expire_seconds = refresh_interval * 6
 
 function http_GET(url)
 	local http = require("resty.http")
@@ -24,18 +25,19 @@ local function discover_services()
 	end
 
 	local services = cjson.decode(json)
+	local new_route_map = {}
 
 	for _, service in ipairs(services) do
+		-- Parse Docker services API
 		local Spec = service['Spec']
-		local Name = Spec['Name']
 		local Labels = Spec['Labels']
-
+		local service_name = Spec['Name']
 		local gateway_route, service_port, protect_paths
 		for key in pairs(Labels) do
 			local val = Labels[key]
 			if key == 'gateway.jwt_port' then
 				local jwt_token, err = http_GET(
-					'http://' .. Name .. ':' .. val
+					'http://' .. service_name .. ':' .. val
 				)
 				if not err then
 					ngx.shared.JWT:set('secret', jwt_token)
@@ -53,21 +55,41 @@ local function discover_services()
 			end
 		end
 
+		-- Update new_route_map
 		if gateway_route and service_port then
-			local expire_secs = refresh_interval * 6
-			ngx.shared.service_name:set(gateway_route, Name, expire_secs)
-			ngx.shared.service_port:set(gateway_route, service_port)
-			print('[rule] /', gateway_route, ' -> ', Name, ':', service_port)
+			-- Get route meta data
+			if not new_route_map[gateway_route] then
+				new_route_map[gateway_route] = {}
+			end
+			local route_meta = new_route_map[gateway_route]
+
+			-- Set services
+			if not route_meta['services'] then
+				route_meta['services'] = {service_name}
+			else
+				table.insert(route_meta['services'], service_name)
+			end
+
+			-- Set port
+			route_meta['port'] = service_port
+
 			-- Any protected path?
 			if protect_paths then
 				-- Let's split the protect paths
 				for path in string.gmatch(protect_paths, "[^,]+") do
-					local protect_path = gateway_route .. path
-					ngx.shared.protect_path:set(protect_path, true)
-					print('[rule] @ protect: ', protect_path)
+					local protected_path = gateway_route .. path
+					print('[protect] ', protected_path)
+					ngx.shared.protected:set(protected_path, true)
 				end
 			end
 		end
+	end -- End of for
+
+	-- Update global route map using new_route_map
+	for gateway_route, route_meta in pairs(new_route_map) do
+		local route_meta_str = cjson.encode(route_meta)
+		print('[service] /', gateway_route, ' -> ', route_meta_str)
+		ngx.shared.route_map:set(gateway_route, route_meta_str, expire_seconds)
 	end
 
 	print('=== SERVICE LIST REFRESHED ===')
