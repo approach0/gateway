@@ -3,6 +3,12 @@ local modified_uri = ngx.var.modified_uri
 local query_params = ngx.var.is_args .. (ngx.var.args or '')
 local full_req_uri = ngx.var.request_uri
 
+-- Anything /non_root will be redirected to /non_root/
+-- to ensure correct relative path for micro-services.
+if route ~= '_root_' and modified_uri == '' then
+	ngx.redirect('/' .. route .. '/' .. query_params)
+end
+
 -- Handle GeoIP information
 local success, info = geo_lookup(ngx.var.remote_addr)
 if success then
