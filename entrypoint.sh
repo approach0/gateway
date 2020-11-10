@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Original entrypoint command
 set -x
 nginx -p `pwd`/ -c ./conf/nginx.conf -g 'daemon off;'
