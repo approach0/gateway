@@ -161,7 +161,7 @@ metric_swarm_nodes = prometheus:gauge("swarm_nodes", "Swarm nodes", {"number"})
 enable_geo_lookup = true
 
 if enable_geo_lookup then
-	local geo = require('resty.maxminddb')
+	geo = require('resty.maxminddb')
 	if not geo.initted() then
 		geo.init("./conf/GeoLite2-City.mmdb")
 	end
