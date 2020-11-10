@@ -1,14 +1,15 @@
 cjson = require("cjson")
+local http = require("resty.http")
 local refresh_interval = 10 -- timer interval (in seconds)
 local expire_seconds = refresh_interval * 6
 
-function http_GET(url)
-	local http = require("resty.http")
+function http_get(url)
 	local httpc = http.new()
 	local data = ''
 	httpc:set_timeout(6000) -- 6s timeout
 
 	local res, err = httpc:request_uri(url)
+
 	if not err then
 		data = res.body
 	end
@@ -17,11 +18,42 @@ function http_GET(url)
 	return data, err
 end
 
-local function discover_services()
-	local json, err = http_GET('http://127.0.0.1/services')
+function unixsock_get(unix_socket, path)
+	local http_resp, data = ''
+	local httpc = http.new()
+	httpc:set_timeout(6000) -- 6s timeout
+
+	local ok, err = httpc:connect(unix_socket)
+
+	if not ok then
+		print('~~ httpc:connect err: ' .. err .. ' ~~')
+		goto skip
+	end
+
+	http_resp, err = httpc:request({
+		method = "GET",
+		path = path,
+		headers = {
+			["Host"] = "127.0.0.1",
+		}
+	})
+
 	if err then
-		errstr = '~~ sock:connect err: ' .. err .. ' ~~'
-		return
+		print('~~ httpc:request err: ' .. err .. ' ~~')
+		goto skip
+	end
+
+	data = http_resp:read_body()
+
+::skip::
+	httpc:close()
+	return data, err
+end
+
+local function discover_services()
+	local json, err = unixsock_get('unix:/var/run/docker.sock', '/services')
+	if err then
+		print('~~ sock:connect err: ' .. err .. ' ~~')
 	end
 
 	local services = cjson.decode(json)
@@ -36,7 +68,7 @@ local function discover_services()
 		for key in pairs(Labels) do
 			local val = Labels[key]
 			if key == 'gateway.jwt_port' then
-				local jwt_token, err = http_GET(
+				local jwt_token, err = http_get(
 					'http://' .. service_name .. ':' .. val
 				)
 				if not err then
