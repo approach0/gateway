@@ -126,12 +126,20 @@ metric_swarm_services = prometheus:gauge("swarm_services", "Swarm services", {"n
 metric_swarm_nodes = prometheus:gauge("swarm_nodes", "Swarm nodes", {"number"})
 
 -- For GeoIP
-geo = require('resty.maxminddb')
-if not geo.initted() then
-	geo.init("./conf/GeoLite2-City.mmdb")
+enable_geo_lookup = true
+
+if enable_geo_lookup then
+	local geo = require('resty.maxminddb')
+	if not geo.initted() then
+		geo.init("./conf/GeoLite2-City.mmdb")
+	end
 end
 
 function geo_lookup(IP_addr)
+	if not enable_geo_lookup then
+		return false, 'GeoIP is not enabled'
+	end
+
 	local res, err = geo.lookup(IP_addr)
 	if res then
 		-- Refer to GeoIP.md for an example JSON
