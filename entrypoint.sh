@@ -15,6 +15,12 @@ set +x
 if [ -n "$DOMAIN" ]; then
 	RELOAD_CMD='nginx -p /root/ -s reload'
 
+	# Enable TLS in nginx.conf and reload httpd
+	sed -i 's/# UNCOMMENT_THIS//g' ./conf/nginx.conf
+	sed -i '/DELETE_THIS/d' ./conf/nginx.conf
+	$RELOAD_CMD
+	cat ./conf/nginx.conf
+
 	pushd ./acme.sh
 	# Verify and issue certificate
 	./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w /root
@@ -24,11 +30,6 @@ if [ -n "$DOMAIN" ]; then
 		--fullchain-file /root/cert.pem \
 		--reloadcmd "$RELOAD_CMD"
 	popd
-
-	# Enable TLS in nginx.conf and reload httpd
-	sed -i 's/# UNCOMMENT_THIS//g' ./conf/nginx.conf
-	sed -i '/DELETE_THIS/d' ./conf/nginx.conf
-	$RELOAD_CMD
 
 	# We should have timer job to renew certification now
 	crontab -l
