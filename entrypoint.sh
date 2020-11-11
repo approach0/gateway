@@ -26,7 +26,8 @@ if [ -n "$DOMAIN" ]; then
 	popd
 
 	# Enable TLS in nginx.conf and reload httpd
-	sed -i 's/# ssl_certificate/ssl_certificate/g' ./conf/nginx.conf
+	sed -i 's/# UNCOMMENT_THIS//g' ./conf/nginx.conf
+	sed -i '/DELETE_THIS/d' ./conf/nginx.conf
 	$RELOAD_CMD
 
 	# We should have timer job to renew certification now
