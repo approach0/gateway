@@ -3,7 +3,9 @@ DOMAIN="$1"
 
 # Original entrypoint command
 set -x
-nginx -p `pwd`/ -c ./conf/nginx.conf -g 'daemon off;'
+nginx -p `pwd`/ -c ./conf/nginx.conf
+sleep 3
+set +x
 
 # If DOMAIN env variable is set, setup TLS server.
 # Example: DOMAIN=approach0.xyz
@@ -20,7 +22,7 @@ if [ -n "$DOMAIN" ]; then
 		--reloadcmd "$RELOAD_CMD"
 	popd
 
-	# Enable TLS in nginx.conf and reload
+	# Enable TLS in nginx.conf and reload httpd
 	sed -i 's/# ssl_certificate/ssl_certificate/g' ./conf/nginx.conf
 	$RELOAD_CMD
 
@@ -30,4 +32,3 @@ if [ -n "$DOMAIN" ]; then
 	echo 'To forcely renew certification:'
 	echo ./acme.sh --renew -d $DOMAIN -d www.$DOMAIN --force
 fi
-set +x
