@@ -1,10 +1,13 @@
 #!/bin/bash
 DOMAIN="$1"
 
+# Enable job control
+set -m
+
 # Original entrypoint command
 set -x
-nginx -p `pwd`/ -c ./conf/nginx.conf
-sleep 3
+nginx -p `pwd`/ -c ./conf/nginx.conf -g 'daemon off;' &
+sleep 3 # ensure nginx is ready for LetsEncrypt challenge
 set +x
 
 # If DOMAIN env variable is set, setup TLS server.
@@ -32,3 +35,5 @@ if [ -n "$DOMAIN" ]; then
 	echo 'To forcely renew certification:'
 	echo ./acme.sh --renew -d $DOMAIN -d www.$DOMAIN --force
 fi
+
+fg
