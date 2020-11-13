@@ -63,6 +63,7 @@ end
 
 -- Handle route JWT verification
 local jwt = require "resty.jwt"
+local validators = require "resty.jwt-validators"
 local sub_route = string.match(modified_uri, '[^/]+') or ''
 for _, test_path in pairs({route .. '/', route .. '/' .. sub_route}) do
 	local protected = ngx.shared.protected:get(test_path)
@@ -70,8 +71,9 @@ for _, test_path in pairs({route .. '/', route .. '/' .. sub_route}) do
 		print('[route] ', test_path, ' is under protection.')
 		local jwt_secret = ngx.shared.JWT:get('secret')
 		local jwt_token = ngx.var.cookie_latticejwt
+		local claim_spec = { exp = validators.is_not_expired() }
 		if jwt_secret and jwt_token then
-			local jwt_res = jwt:verify(jwt_secret, jwt_token)
+			local jwt_res = jwt:verify(jwt_secret, jwt_token, claim_spec)
 			if jwt_res.valid and jwt_res.verified then
 				break
 			else
