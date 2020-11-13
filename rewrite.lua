@@ -75,6 +75,7 @@ for _, test_path in pairs({route .. '/', route .. '/' .. sub_route}) do
 		if jwt_secret and jwt_token then
 			local jwt_res = jwt:verify(jwt_secret, jwt_token, claim_spec)
 			if jwt_res.valid and jwt_res.verified then
+				print('[JWT] verified, will expire@: ', jwt_res.payload.exp)
 				break
 			else
 				print('[JWT] request rejected: ', jwt_res.reason)
