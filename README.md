@@ -16,7 +16,7 @@ Build the image
 
 Run gateway locally
 ```
-# docker run -it --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock gateway
+# docker run -it --publish 8080:443 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock gateway
 ```
 
 Test in your browser with URL: `http://localhost:8080/nonexist`
@@ -28,7 +28,7 @@ To test in a swarm environment, use mock-up micro services `ga6840/hello-httpd` 
 ```
 # docker swarm init
 # docker network create --driver=overlay --attachable testnet
-# docker service create --name gateway --network testnet --publish 8080:80 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
+# docker service create --name gateway --network testnet --publish 8080:443 --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock ga6840/gateway
 ```
 
 ### Hello-world service discovery
