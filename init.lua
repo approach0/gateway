@@ -142,6 +142,7 @@ metric_request_uri = prometheus:counter("request_uri", "Request URI", {
 metric_request_geoip = prometheus:counter("request_geoip", "Request GeoIP", {
 	"ip",
 	"city",
+	"subd",
 	"ctry",
 	"longitude",
 	"latitude"
@@ -176,8 +177,9 @@ function geo_lookup(IP_addr)
 	if res then
 		-- Refer to GeoIP.md for an example JSON
 		return true, {
-			city = res.city.names,en,
-			country = res.country.names,en,
+			city = res.city.names.en,
+			subdivisions = res.subdivisions.names.en,
+			country = res.country.names.en,
 			longitude = res.location.longitude,
 			latitude = res.location.latitude
 		}
