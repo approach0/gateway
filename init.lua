@@ -175,10 +175,15 @@ function geo_lookup(IP_addr)
 
 	local res, err = geo.lookup(IP_addr)
 	if res then
+		local region = 'Unknown'
+		local subdivisions = res.subdivisions
+		if subdivisions ~= nil and #subdivisions > 0 then
+			region = subdivisions[1].names.en
+		end
 		-- Refer to GeoIP.md for an example JSON
 		return true, {
 			city = res.city.names.en,
-			subdivisions = res.subdivisions.names.en,
+			subdivisions = region,
 			country = res.country.names.en,
 			longitude = res.location.longitude,
 			latitude = res.location.latitude

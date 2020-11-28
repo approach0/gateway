@@ -13,7 +13,7 @@ end
 local success, info = geo_lookup(ngx.var.remote_addr)
 if success then
 	ngx.var.geo_city = info.city
-	ngx.var.geo_subd = info.subdivisions
+	ngx.var.geo_subd = info.region
 	ngx.var.geo_ctry = info.country
 	ngx.var.geo_longitude = info.longitude
 	ngx.var.geo_latitude  = info.latitude
