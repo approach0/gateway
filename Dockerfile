@@ -33,7 +33,7 @@ RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -
 
 ## Setup root directory
 RUN mkdir -p logs/ conf/
-COPY ./nginx.conf ./conf/
+COPY ./*.conf ./conf/
 COPY ./*.lua ./conf/
 COPY ./entrypoint.sh .
 RUN chmod +x ./conf/*.lua
