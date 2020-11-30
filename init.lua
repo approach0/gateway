@@ -183,7 +183,7 @@ function geo_lookup(IP_addr)
 		-- Refer to GeoIP.md for an example JSON
 		return true, {
 			city = res.city.names.en,
-			subdivisions = region,
+			region = region,
 			country = res.country.names.en,
 			longitude = res.location.longitude,
 			latitude = res.location.latitude

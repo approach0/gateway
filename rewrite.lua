@@ -10,13 +10,13 @@ if route ~= '_root_' and modified_uri == '' then
 end
 
 -- Handle GeoIP information
-local success, info = geo_lookup(ngx.var.remote_addr)
+local success, geo_info = geo_lookup(ngx.var.remote_addr)
 if success then
-	ngx.var.geo_city = info.city
-	ngx.var.geo_subd = info.region
-	ngx.var.geo_ctry = info.country
-	ngx.var.geo_longitude = info.longitude
-	ngx.var.geo_latitude  = info.latitude
+	ngx.var.geo_city = geo_info.city
+	ngx.var.geo_subd = geo_info.region
+	ngx.var.geo_ctry = geo_info.country
+	ngx.var.geo_longitude = geo_info.longitude
+	ngx.var.geo_latitude  = geo_info.latitude
 end
 
 -- Handle proxy host rewriting
