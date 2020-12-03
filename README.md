@@ -87,7 +87,7 @@ scrape_configs:
 ```
 In query box, enter metrics such as `total_requests` as defined in `init.lua` file.
 
-### Let's Encrypt certificates bootstrap
+### HTTPs bootstrap
 When `entrypoint.sh` is passed with a domain name argument, it will invoke `acme.sh` to install HTTPs certificates using Let's Encrypt service.
 
 Mount a persistent directory or volume to `/root/keys` directory in container. Otherwise each time this service is updated, it will consume the certificates issue quota posed by Let's Encrypt.

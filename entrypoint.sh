@@ -17,13 +17,16 @@ if [ -n "$DOMAIN" ]; then
 	# Enable TLS in Nginx using boostrap key/cert.pem
 	sed -i 's/# UNCOMMENT_THIS//g' ./conf/nginx.conf
 	sed -i '/DELETE_THIS/d' ./conf/nginx.conf
+	cat ./conf/nginx.conf
 	$RELOAD_CMD
 
 	# try to reload a real key/cert.pem, install it if it's missing.
+	set -x
 	CERT_DIR='/root/keys'
 	UPDATE_CERT="cp $CERT_DIR/key.pem /root; cp $CERT_DIR/cert.pem /root; $RELOAD_CMD"
 	if [ -e $CERT_DIR/key.pem ]; then
-		$UPDATE_CERT
+		echo "Real certificates exist, use them..."
+		bash -c "$UPDATE_CERT"
 	else
 		pushd ./acme.sh
 		# Verify and issue certificate
@@ -33,9 +36,10 @@ if [ -n "$DOMAIN" ]; then
 		./acme.sh --install-cert -d $DOMAIN -d www.$DOMAIN \
 			--key-file $CERT_DIR/key.pem \
 			--fullchain-file $CERT_DIR/cert.pem \
-			--reloadcmd "$UPDATE_CERT"
+			--reloadcmd "bash -c '$UPDATE_CERT'"
 		popd
 	fi
+	set +x
 
 	# We should have timer job to renew certification now
 	crontab -l
