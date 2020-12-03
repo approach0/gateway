@@ -1,4 +1,4 @@
-# Approach0 Gateway :guard:
+# Approach Zero Gateway :guard:
 This is yet another API gateway service, built upon OpenResty in minimalist fashion.
 
 ## Features
