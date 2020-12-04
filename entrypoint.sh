@@ -27,10 +27,13 @@ if [ -n "$DOMAIN" ]; then
 	if [ -e $CERT_DIR/key.pem ]; then
 		echo "Real certificates exist, use them..."
 		bash -c "$UPDATE_CERT"
+
+		# setup cron job by myself
+		echo "23 1 * * * $CERT_DIR/.acme.sh/acme.sh --cron --home $CERT_DIR/.acme.sh > /dev/null" | crontab -
 	else
 		pushd ./acme.sh
 		# Verify and issue certificate
-		./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w /root
+		./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w $CERT_DIR
 		# Generate certificate pem files
 		mkdir -p $CERT_DIR
 		./acme.sh --install-cert -d $DOMAIN -d www.$DOMAIN \
@@ -41,10 +44,10 @@ if [ -n "$DOMAIN" ]; then
 	fi
 	set +x
 
-	# We should have timer job to renew certification now
+	# see if we have cron job to renew certificates
 	crontab -l
 
-	echo 'To forcely renew certification:'
+	echo 'To forcely renew certificates:'
 	echo ./acme.sh --renew -d $DOMAIN -d www.$DOMAIN --force
 fi
 
