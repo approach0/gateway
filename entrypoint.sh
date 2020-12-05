@@ -29,11 +29,11 @@ if [ -n "$DOMAIN" ]; then
 		bash -c "$UPDATE_CERT"
 
 		# setup cron job by myself
-		echo "23 1 * * * $CERT_DIR/.acme.sh/acme.sh --cron --home $CERT_DIR/.acme.sh > /dev/null" | crontab -
+		echo "23 1 * * * /root/.acme.sh/acme.sh --cron --home /root/.acme.sh > /dev/null" | crontab -
 	else
 		pushd ./acme.sh
 		# Verify and issue certificate
-		./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w $CERT_DIR
+		./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w /root
 		# Generate certificate pem files
 		mkdir -p $CERT_DIR
 		./acme.sh --install-cert -d $DOMAIN -d www.$DOMAIN \
