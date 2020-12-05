@@ -32,6 +32,8 @@ if [ -n "$DOMAIN" ]; then
 		echo "23 1 * * * /root/.acme.sh/acme.sh --cron --home /root/.acme.sh > /dev/null" | crontab -
 	else
 		pushd ./acme.sh
+		# Install acme.sh in ~/.acme.sh directory
+		./acme.sh --install
 		# Verify and issue certificate
 		./acme.sh --issue -d $DOMAIN -d www.$DOMAIN -w /root
 		# Generate certificate pem files

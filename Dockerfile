@@ -27,7 +27,6 @@ RUN apt-get install -y --no-install-recommends libmaxminddb0 libmaxminddb-dev mm
 ## Install Let's encrypt
 RUN apt-get install -y --no-install-recommends git cron
 RUN git clone --depth 1 https://github.com/approach0/acme.sh.git
-RUN cd ./acme.sh && ./acme.sh --install
 RUN mkdir .well-known && echo '<!DOCTYPE html><html><body>test</body></html>' > .well-known/test.html
 RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=Oregon/L=Portland/O=Linux/OU=Org/CN=www.microsoft.com" # a self-signed key to bootstrap TLS
 
