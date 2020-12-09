@@ -17,8 +17,8 @@ ENV PATH="${PATH}:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin"
 WORKDIR /root
 
 ## Get GeoIP database
-RUN wget https://raw.githubusercontent.com/t-k-/download/master/downcity.tar.gz -O GeoLite2-City.tar.gz && tar -xzvf GeoLite2-City.tar.gz && mv GeoLite2-City*/*.mmdb ./conf && rm -rf GeoLite2-City*
 RUN mkdir -p /root/conf
+RUN wget https://raw.githubusercontent.com/t-k-/download/master/downcity.tar.gz -O GeoLite2-City.tar.gz && tar -xzvf GeoLite2-City.tar.gz && mv GeoLite2-City*/*.mmdb ./conf && rm -rf GeoLite2-City*
 RUN apt-get install -y --no-install-recommends libmaxminddb0 libmaxminddb-dev mmdb-bin # for libmaxminddb.so
 
 ## Install Let's encrypt
