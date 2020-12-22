@@ -50,6 +50,15 @@ function unixsock_get(unix_socket, path)
 	return data, err
 end
 
+-- Retrieve Lua table value recursively from a path of keys
+function path_get(table, key, ...)
+	if table == nil or key == nil then
+		return table
+	else
+		return path_get(table[key], ...)
+	end
+end
+
 local function discover_services()
 	local json, err = unixsock_get('unix:/var/run/docker.sock', '/services')
 	if err then
@@ -175,18 +184,22 @@ function geo_lookup(IP_addr)
 
 	local res, err = geo.lookup(IP_addr)
 	if res then
-		local region = 'Unknown'
-		local subdivisions = res.subdivisions
-		if subdivisions ~= nil and #subdivisions > 0 then
-			region = subdivisions[1].names.en
-		end
-		-- Refer to GeoIP.md for an example JSON
+		local city = path_get(res, "city", "names", "en")
+		local region = path_get(res, "subdivisions", 1, "names", "en")
+		local country = path_get(res, "country", "names", "en")
+		local longitude = path_get(res, "location", "longitude")
+		local latitude = path_get(res, "location", "latitude")
+
+		-- Refer to GeoIP.md or uncomment below for an example JSON
+		-- local json_res = cjson.encode(res)
+		-- print(json_res)
+
 		return true, {
-			city = res.city.names.en,
-			region = region,
-			country = res.country.names.en,
-			longitude = res.location.longitude,
-			latitude = res.location.latitude
+			city = city or 'Unknown',
+			region = region or 'Unknown',
+			country = country or 'Unknown',
+			longitude = longitude or 0,
+			latitude = latitude or 0
 		}
 	else
 		return false, err

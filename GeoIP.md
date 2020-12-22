@@ -69,3 +69,59 @@ An example JSON result from GeoIP library.
    }
 }
 ```
+
+An example outlier JSON (`city` key is missing):
+```
+{
+   "continent":{
+      "code":"EU",
+      "names":{
+         "fr":"Europe",
+         "ja":"ヨーロッパ",
+         "en":"Europe",
+         "pt-BR":"Europa",
+         "de":"Europa",
+         "ru":"Европа",
+         "zh-CN":"欧洲",
+         "es":"Europa"
+      },
+      "geoname_id":6255148
+   },
+   "registered_country":{
+      "is_in_european_union":true,
+      "iso_code":"RO",
+      "names":{
+         "fr":"Roumanie",
+         "ja":"ルーマニア",
+         "en":"Romania",
+         "pt-BR":"Romênia",
+         "de":"Rumänien",
+         "ru":"Румыния",
+         "zh-CN":"罗马尼亚",
+         "es":"Rumanía"
+      },
+      "geoname_id":798549
+   },
+   "country":{
+      "is_in_european_union":true,
+      "iso_code":"RO",
+      "names":{
+         "fr":"Roumanie",
+         "ja":"ルーマニア",
+         "en":"Romania",
+         "pt-BR":"Romênia",
+         "de":"Rumänien",
+         "ru":"Румыния",
+         "zh-CN":"罗马尼亚",
+         "es":"Rumanía"
+      },
+      "geoname_id":798549
+   },
+   "location":{
+      "longitude":24.997,
+      "latitude":45.9968,
+      "time_zone":"Europe\/Bucharest",
+      "accuracy_radius":200
+   }
+}
+```
