@@ -29,7 +29,10 @@ if [ -n "$DOMAIN" ]; then
 		bash -c "$UPDATE_CERT"
 
 		# setup cron job by myself
-		echo "23 1 * * * /root/.acme.sh/acme.sh --cron --home /root/.acme.sh > /dev/null" | crontab -
+		crontab <<- EOF
+		23 1 * * * /root/.acme.sh/acme.sh --cron --home /root/.acme.sh > /tmp/acme.log
+		*  * * * * date > /tmp/cron.alive
+		EOF
 	else
 		pushd ./acme.sh
 		# Install acme.sh in ~/.acme.sh directory
@@ -44,6 +47,7 @@ if [ -n "$DOMAIN" ]; then
 			--reloadcmd "bash -c '$UPDATE_CERT'"
 		popd
 	fi
+	service cron start
 	set +x
 
 	# see if we have cron job to renew certificates
