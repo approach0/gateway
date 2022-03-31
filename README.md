@@ -1,5 +1,5 @@
 # Approach Zero Gateway :guard:
-This is yet another API gateway service, built upon OpenResty in minimalist fashion.
+This is yet another API gateway service, built upon OpenResty in a minimalist fashion.
 
 ## Features
 * Docker Swarm service discovery
